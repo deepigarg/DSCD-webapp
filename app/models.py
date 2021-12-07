@@ -11,6 +11,7 @@ class User(UserMixin, db.Model):
     password_hash = db.Column(db.String(128))
     user_type = db.Column(db.String(12))
     subscribed_channels = db.Column(db.PickleType)
+    subscribed_courses = db.Column(db.PickleType)
 
     def __repr__(self):
         return '<User {}>'.format(self.username)
@@ -26,10 +27,17 @@ class Channel(UserMixin, db.Model):
     name = db.Column(db.String(100), index=True, primary_key=True)
     number_of_members = db.Column(db.Integer)
     number_of_posts = db.Column(db.Integer)
-    url = '/channel/' + name
 
     def __repr__(self):
-        return '<Channel {}; Link {}>'.format(self.name, self.url)
+        return '<Channel {};>'.format(self.name)
+
+
+class Course(UserMixin, db.Model):
+    name = db.Column(db.String(100), index=True, primary_key=True)
+    number_of_members = db.Column(db.Integer)
+
+    def __repr__(self):
+        return '<Course {};>'.format(self.name)
 
 
 @login.user_loader

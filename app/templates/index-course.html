@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <title>Forum</title>
+    <title>Course Management</title>
     <link rel="stylesheet" href="static/css/all.css" />
     <link rel="stylesheet" href="static/style.css" />
   </head>
@@ -35,16 +35,16 @@
                   <i class="fas fa-circle"></i>{{ current_user.email }}
               </p>
               <h4 class="channels-header">
-                <i class="fas fa-sort-down"></i> Your Channels
+                <i class="fas fa-sort-down"></i> Your Courses
               </h4>
               <ul>
-                {% for ch in current_user.subscribed_channels %}
+                {% for ch in current_user.subscribed_courses %}
                     <li>
-                      <a href= "/channel/{{ ch.name }}" ><i class="fas fa-hashtag"></i>{{ ch.name }}</a>
+                      <a href= "/course/{{ ch.name }}" ><i class="fas fa-hashtag"></i>{{ ch.name }}</a>
                     </li>
                 {% endfor %}
                   <li>
-                    <a href="/join"><i class="fas fa-plus"></i>Join a channel</a>
+                    <a href="/joincourse"><i class="fas fa-plus"></i>Join a course</a>
                   </li>
               </ul>
             </section>

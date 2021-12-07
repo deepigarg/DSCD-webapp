@@ -1,7 +1,7 @@
 from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, BooleanField, SubmitField, RadioField, SelectField
 from wtforms.validators import ValidationError, DataRequired, Email, EqualTo
-from app.models import User, Channel
+from app.models import User, Channel, Course
 
 
 class LoginForm(FlaskForm):
@@ -51,4 +51,22 @@ class JoinChannelForm(FlaskForm):
 
 class AddChannelForm(FlaskForm):
     channel_name = StringField('Channel Name', validators=[DataRequired()])
+    submit = SubmitField('Add!')
+
+
+class JoinCourseForm(FlaskForm):
+    title = SelectField(
+        'Choose a course to join',
+        [DataRequired()])
+    submit = SubmitField('Join!')
+
+    def __init__(self):
+        super(JoinCourseForm, self).__init__()
+        courses = Course.query.all()
+        choices = [(n.name, n.name) for n in courses]
+        self.title.choices = choices
+
+
+class AddCourseForm(FlaskForm):
+    course_name = StringField('Course Name', validators=[DataRequired()])
     submit = SubmitField('Add!')

@@ -1,8 +1,8 @@
 """empty message
 
-Revision ID: 038f832d6c35
+Revision ID: 4755df2d1a45
 Revises: 
-Create Date: 2021-12-07 16:25:30.379702
+Create Date: 2021-12-07 23:41:04.953833
 
 """
 from alembic import op
@@ -10,7 +10,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = '038f832d6c35'
+revision = '4755df2d1a45'
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -25,6 +25,12 @@ def upgrade():
     sa.PrimaryKeyConstraint('name')
     )
     op.create_index(op.f('ix_channel_name'), 'channel', ['name'], unique=False)
+    op.create_table('course',
+    sa.Column('name', sa.String(length=100), nullable=False),
+    sa.Column('number_of_members', sa.Integer(), nullable=True),
+    sa.PrimaryKeyConstraint('name')
+    )
+    op.create_index(op.f('ix_course_name'), 'course', ['name'], unique=False)
     op.create_table('user',
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('username', sa.String(length=64), nullable=True),
@@ -32,6 +38,7 @@ def upgrade():
     sa.Column('password_hash', sa.String(length=128), nullable=True),
     sa.Column('user_type', sa.String(length=12), nullable=True),
     sa.Column('subscribed_channels', sa.PickleType(), nullable=True),
+    sa.Column('subscribed_courses', sa.PickleType(), nullable=True),
     sa.PrimaryKeyConstraint('id')
     )
     op.create_index(op.f('ix_user_email'), 'user', ['email'], unique=True)
@@ -44,6 +51,8 @@ def downgrade():
     op.drop_index(op.f('ix_user_username'), table_name='user')
     op.drop_index(op.f('ix_user_email'), table_name='user')
     op.drop_table('user')
+    op.drop_index(op.f('ix_course_name'), table_name='course')
+    op.drop_table('course')
     op.drop_index(op.f('ix_channel_name'), table_name='channel')
     op.drop_table('channel')
     # ### end Alembic commands ###

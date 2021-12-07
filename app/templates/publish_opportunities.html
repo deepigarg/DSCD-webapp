@@ -13,15 +13,13 @@
     <div class="container">
       <!-- Header and navigation -->
         <nav class="nav">
-          <a href="{{ url_for('index_faculty') }}"><p style="color:white;">Forum        </p></a>
-          <a href="{{ url_for('publish_opportunities') }}"><p style="color:white;"><b>Publish Projects and Opportunities</b>        </p></a>
-          <div class="move-left">
-            {% if current_user.is_anonymous %}
-            <a href="{{ url_for('login') }}"><p style="color:white;">Login</p></a>
-            {% else %}
-            <a href="{{ url_for('logout') }}"><p style="color:white;">Logout</p></a>
-            {% endif %}
-          </div>
+          <a href="{{ url_for('index_faculty') }}"><p style="color:white;">Course Management</p></a>
+          <a href="{{ url_for('publish_opportunities') }}"><p style="color:white;"><b>Publish Projects and Opportunities</b></p></a>
+          {% if current_user.is_anonymous %}
+          <a href="{{ url_for('login') }}"><p style="color:white;">Login</p></a>
+          {% else %}
+          <a href="{{ url_for('logout') }}"><p style="color:white;">Logout</p></a>
+          {% endif %}
         </nav>
       <!-- End of header and navigation -->
       <main class="main">
