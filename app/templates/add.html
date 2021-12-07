@@ -16,7 +16,7 @@ Add Channel
 {% block content %}
     <div class="container">
 
-      <form class="form-signin" method="POST" action="/login">
+      <form class="form-signin" method="POST" action="/add">
         <h2 class="form-signin-heading">Add a Channel</h2>
         {{ form.hidden_tag() }}
         {{ wtf.form_field(form.channel_name) }}

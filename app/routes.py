@@ -5,6 +5,7 @@ from flask_login import current_user, login_user, logout_user, login_required
 from app.models import User, Channel
 from flask import request
 from werkzeug.urls import url_parse
+from sqlalchemy.orm.attributes import flag_modified
 
 
 @app.route('/forum')
@@ -79,7 +80,7 @@ def register():
         return redirect(url_for('index'))
     form = RegistrationForm()
     if form.validate_on_submit():
-        user = User(username=form.username.data, email=form.email.data)
+        user = User(username=form.username.data, email=form.email.data, user_type=form.login_type.data, subscribed_channels=[])
         user.set_password(form.password.data)
         db.session.add(user)
         db.session.commit()
@@ -92,16 +93,19 @@ def register():
 def join():
     form = JoinChannelForm()
     if form.validate_on_submit():
-        ch = Channel.query.get(form.title)
-        ch_list = current_user.subscribed_channel.data
+        ch = Channel.query.get(form.title.data)
+        ch_list = list(current_user.subscribed_channels)
         ch_list.append(ch)
-        current_user.subscribed_channel.data = ch_list
+        current_user.subscribed_channels = ch_list
+        flag_modified(current_user, "subscribed_channels")
+        db.session.merge(current_user)
+        db.session.flush()
+        db.session.commit()
         flash('Congratulations, you have joined the channel')
         if current_user.user_type == 'Student':
             return render_template('index.html')
-        else:
+        elif current_user.user_type == "Faculty":
             return render_template('index-faculty.html')
-
     return render_template('join.html', form=form)
 
 
@@ -110,9 +114,10 @@ def add():
     form = AddChannelForm()
     if form.validate_on_submit():
         ch_name = str(form.channel_name.data)
-        url = '/channel/'+ch_name
+        url = '/channel/'.join(ch_name)
         chan = Channel(name=ch_name, number_of_members=0, number_of_posts=0, url=url)
         db.session.add(chan)
+        db.session.flush()
         db.session.commit()
         return redirect(url_for('join'))
     return render_template('add.html', form=form)

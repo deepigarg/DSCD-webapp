@@ -37,13 +37,16 @@ class RegistrationForm(FlaskForm):
 
 
 class JoinChannelForm(FlaskForm):
-    channels = Channel.query.all()
-    choices = [(n.name, n.name) for n in channels]
     title = SelectField(
         'Choose a channel to join',
-        [DataRequired()],
-        choices=choices)
+        [DataRequired()])
     submit = SubmitField('Join!')
+
+    def __init__(self):
+        super(JoinChannelForm, self).__init__()
+        channels = Channel.query.all()
+        choices = [(n.name, n.name) for n in channels]
+        self.title.choices = choices
 
 
 class AddChannelForm(FlaskForm):

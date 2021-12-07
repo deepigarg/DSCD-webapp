@@ -36,21 +36,18 @@
               <h4 class="channels-header">
                 <i class="fas fa-sort-down"></i> Channels
               </h4>
-              {% if current_user.subscribed_channels.data %}
-                {% for ch in current_user.subscribed_channels.data %}
+                {% for ch in current_user.subscribed_channels %}
                   <ul>
                     <li>
-                      <a href=ch.url><i class="fas fa-hashtag"></i>{{ ch.name }}</a>
+                      <a href= "/channel/{{ ch.name }}" ><i class="fas fa-hashtag"></i>{{ ch.name }}</a>
                     </li>
                   </ul>
                 {% endfor %}
-              {% else %}
                 <ul>
                   <li>
                     <a href="/join"><i class="fas fa-plus"></i>Join a channel</a>
                   </li>
                 </ul>
-              {% endif %}
             </section>
           </article>
         <section class="body">
