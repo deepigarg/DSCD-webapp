@@ -1,0 +1,37 @@
+<!DOCTYPE >
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <title>Forum</title>
+    <link rel="stylesheet" href="static/css/all.css" />
+    <link rel="stylesheet" href="static/style.css" />
+  </head>
+
+  <body>
+    <div class="container">
+      <!-- Header and navigation -->
+        <nav class="nav">
+          <a href="{{ url_for('index_faculty') }}"><p style="color:white;"><b>Forum</b>        </p></a>
+          <a href="{{ url_for('publish_opportunities') }}"><p style="color:white;">Publish Projects and Opportunities        </p></a>
+          <div class="move-left">
+            {% if current_user.is_anonymous %}
+            <a href="{{ url_for('login') }}"><p style="color:white;">Login</p></a>
+            {% else %}
+            <a href="{{ url_for('logout') }}"><p style="color:white;">Logout</p></a>
+            {% endif %}
+          </div>
+        </nav>
+      <!-- End of header and navigation -->
+      <main class="main">
+          <article class="sidebar">
+          </article>
+        <section class="body">
+
+        </section>
+      </main>
+    </div>
+    <script src="static/script.js"></script>
+  </body>
+</html>

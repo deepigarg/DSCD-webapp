@@ -1,0 +1,63 @@
+<!DOCTYPE >
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <title>Forum</title>
+    <link rel="stylesheet" href="static/css/all.css" />
+    <link rel="stylesheet" href="static/style.css" />
+  </head>
+
+  <body>
+    <div class="container">
+      <!-- Header and navigation -->
+        <nav class="nav">
+          <a href="{{ url_for('index') }}"><p style="color:white;"><b>Resources Forum</b></p></a>
+          <a href="{{ url_for('explore_opportunities') }}"><p style="color:white;">Explore Opportunities</p></a>
+          <a href="{{ url_for('doubt_resolution') }}"><p style="color:white;">Academic Doubt Resolution</p></a>
+          {% if current_user.is_anonymous %}
+          <a href="{{ url_for('login') }}"><p style="color:white;">Login</p></a>
+          {% else %}
+          <a href="{{ url_for('logout') }}"><p style="color:white;">Logout</p></a>
+          {% endif %}
+        </nav>
+      <!-- End of header and navigation -->
+      <main class="main">
+          <article class="sidebar">
+            <section class="channels">
+              <div class="sidebar-user-info">
+                <h4 style="color:white;">{{ current_user.username }}</h4>
+<!--                <i class="fas fa-chevron-down"></i>-->
+              </div>
+              <p class="sidebar-user-info-additional">
+                  <i class="fas fa-circle"></i>{{ current_user.email }}
+              </p>
+              <h4 class="channels-header">
+                <i class="fas fa-sort-down"></i> Channels
+              </h4>
+              {% if current_user.subscribed_channels.data %}
+                {% for ch in current_user.subscribed_channels.data %}
+                  <ul>
+                    <li>
+                      <a href=ch.url><i class="fas fa-hashtag"></i>{{ ch.name }}</a>
+                    </li>
+                  </ul>
+                {% endfor %}
+              {% else %}
+                <ul>
+                  <li>
+                    <a href="/join"><i class="fas fa-plus"></i>Join a channel</a>
+                  </li>
+                </ul>
+              {% endif %}
+            </section>
+          </article>
+        <section class="body">
+
+        </section>
+      </main>
+    </div>
+    <script src="static/script.js"></script>
+  </body>
+</html>

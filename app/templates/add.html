@@ -1,0 +1,29 @@
+{% extends "bootstrap/base.html" %}
+{% import "bootstrap/wtf.html" as wtf %}
+
+{% block title %}
+Add Channel
+{% endblock %}
+
+{% block styles %}
+{{super()}}
+<link rel="stylesheet" href="{{url_for('.static', filename='signin.css')}}">
+<style>
+  h4 {text-align: center;}
+</style>
+{% endblock %}
+
+{% block content %}
+    <div class="container">
+
+      <form class="form-signin" method="POST" action="/login">
+        <h2 class="form-signin-heading">Add a Channel</h2>
+        {{ form.hidden_tag() }}
+        {{ wtf.form_field(form.channel_name) }}
+        <button class="btn btn-lg btn-primary btn-block" type="submit">Add!</button>
+      </form>
+
+      <h4 class="form-signin-heading"><a href="{{ url_for('join') }}">Join a channel instead!</a></h4>
+
+    </div> <!-- /container -->
+{% endblock %}
