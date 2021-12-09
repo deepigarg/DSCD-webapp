@@ -70,3 +70,8 @@ class JoinCourseForm(FlaskForm):
 class AddCourseForm(FlaskForm):
     course_name = StringField('Course Name', validators=[DataRequired()])
     submit = SubmitField('Add!')
+
+
+class SendMessageForm(FlaskForm):
+    message = StringField('', validators=[DataRequired()], render_kw={"placeholder": "Type a message..."})
+    submit = SubmitField('Send!')

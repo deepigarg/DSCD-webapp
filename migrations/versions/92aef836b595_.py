@@ -1,8 +1,8 @@
 """empty message
 
-Revision ID: 4755df2d1a45
+Revision ID: 92aef836b595
 Revises: 
-Create Date: 2021-12-07 23:41:04.953833
+Create Date: 2021-12-09 14:22:57.301965
 
 """
 from alembic import op
@@ -10,7 +10,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = '4755df2d1a45'
+revision = '92aef836b595'
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -22,6 +22,7 @@ def upgrade():
     sa.Column('name', sa.String(length=100), nullable=False),
     sa.Column('number_of_members', sa.Integer(), nullable=True),
     sa.Column('number_of_posts', sa.Integer(), nullable=True),
+    sa.Column('posts', sa.PickleType(), nullable=True),
     sa.PrimaryKeyConstraint('name')
     )
     op.create_index(op.f('ix_channel_name'), 'channel', ['name'], unique=False)
@@ -31,6 +32,15 @@ def upgrade():
     sa.PrimaryKeyConstraint('name')
     )
     op.create_index(op.f('ix_course_name'), 'course', ['name'], unique=False)
+    op.create_table('message',
+    sa.Column('msg_id', sa.Integer(), nullable=False),
+    sa.Column('channel', sa.String(length=100), nullable=True),
+    sa.Column('sender', sa.String(length=64), nullable=True),
+    sa.Column('content', sa.String(length=100000), nullable=True),
+    sa.Column('timestamp', sa.DateTime(), nullable=True),
+    sa.PrimaryKeyConstraint('msg_id')
+    )
+    op.create_index(op.f('ix_message_timestamp'), 'message', ['timestamp'], unique=False)
     op.create_table('user',
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('username', sa.String(length=64), nullable=True),
@@ -51,6 +61,8 @@ def downgrade():
     op.drop_index(op.f('ix_user_username'), table_name='user')
     op.drop_index(op.f('ix_user_email'), table_name='user')
     op.drop_table('user')
+    op.drop_index(op.f('ix_message_timestamp'), table_name='message')
+    op.drop_table('message')
     op.drop_index(op.f('ix_course_name'), table_name='course')
     op.drop_table('course')
     op.drop_index(op.f('ix_channel_name'), table_name='channel')

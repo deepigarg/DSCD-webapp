@@ -137,7 +137,7 @@ body {
   height: 100%;
   width: 100%;
   text-align: justify;
-  overflow: hidden;
+  overflow: auto;
 }
 
 blockquote {
@@ -275,7 +275,6 @@ body::-webkit-scrollbar-thumb {
 .nav {
   width: 100%;
   background-color: #337ab7;
-  overflow: auto;
   display: flex;
   align-items: center;
 }
@@ -379,7 +378,7 @@ body::-webkit-scrollbar-thumb {
   grid-row: 2 / -1;
   display: grid;
   grid-template-columns: 16.25rem 2fr;
-  overflow: hidden;
+  overflow: scroll;
 }
 
 /* fixed sidebar */
@@ -394,11 +393,11 @@ body::-webkit-scrollbar-thumb {
 }
 /* body  */
 .body {
-  grid-column: 2 / -1;
+  /*grid-column: 2 / -1;*/
   background-color: var(--slack-main-white);
   border-right: 0.1rem solid rgba(29, 28, 29, 0.13);
-  display: grid;
-  grid-template-columns: 1.5fr 1fr;
+  /*display: grid;*/
+  /*grid-template-columns: 1.5fr 1fr;*/
 }
 /* body content */
 .content {
@@ -406,12 +405,12 @@ body::-webkit-scrollbar-thumb {
   height: 100vh;
   border-right: 0.1rem solid var(--slack-white);
   display: grid;
-  grid-template-columns: 1fr;
+  /*grid-template-columns: 1fr;
   grid-template-rows: auto 1fr 10rem;
   grid-template-areas:
     "header"
     "main"
-    "footer";
+    "footer";*/
 }
 /* body right-sidebar */
 .right-sidebar {
@@ -658,8 +657,8 @@ body::-webkit-scrollbar-thumb {
 /* body content */
 .content-header {
   /* position: fixed;
-  width: 48%; */
-  grid-area: header;
+  width: 48%;
+  grid-area: header;*/
   display: flex;
   align-items: center;
   background-color: #fff;
@@ -720,7 +719,7 @@ body::-webkit-scrollbar-thumb {
 }
 
 .feed {
-  display: flex;
+  /*display: flex;*/
   padding: 0.5rem;
   margin-left: 1rem;
   margin-right: 2rem;
@@ -865,10 +864,13 @@ body::-webkit-scrollbar-thumb {
 
 /* form/footer begins */
 .form {
-  grid-area: footer;
+  /*grid-area: footer;
   height: 80%;
   position: relative;
-  display: flex;
+  display: flex;*/
+  /*display:flex;*/
+  /*height:20%;
+  position: fixed;*/
   justify-content: center;
   align-items: center;
 }
@@ -913,7 +915,9 @@ body::-webkit-scrollbar-thumb {
   border-right: 0.1rem solid var(--slack-tag-border-color);
 }
 .move-right {
-  margin-right: auto;
+  margin-left: auto;
+  display: flex;
+  align-items: center;
 }
 .move-left {
   margin-left: auto;
@@ -1253,17 +1257,28 @@ body::-webkit-scrollbar-thumb {
 }
 
 .form-control {
-  width: 100%;
+  width: 80%;
   height: 2.5rem;
   margin-right: 1rem;
   font-size: 1.1rem;
-  padding: 0 1rem;
+  padding: 5 1rem;
   border: 0.1rem solid #ddd;
   border-radius: 0.325rem;
   background-color: var(--slack-tag-background);
   color: var(--slack-cyan);
   transition: all 0.3s ease-in;
+  position: fixed;
+  bottom: 10px;
+  left: 275;
 }
+
+.send-button {
+  position: absolute;
+  width: 100%;
+  bottom: 50px;
+  left: 1421;
+}
+
 .form-control:focus {
   border: 0.125rem solid var(--slack-green);
 }
@@ -1279,11 +1294,6 @@ body::-webkit-scrollbar-thumb {
   padding: 0.5rem;
   position: absolute;
   top: 0.28rem;
-}
-
-p {
-  padding-left:30px;
-  padding-right:30px;
 }
 
 .number {
@@ -1608,7 +1618,7 @@ p {
 @media (min-width: 800px) {
   .feeds {
     display: grid;
-    justify-content: center;
+    justify-content: left;
     align-items: center;
   }
 }

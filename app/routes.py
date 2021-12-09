@@ -1,11 +1,15 @@
 from app import app, db
 from flask import render_template, flash, redirect, url_for
 from app.forms import LoginForm, RegistrationForm, JoinChannelForm, AddChannelForm, AddCourseForm, JoinCourseForm
+from app.forms import SendMessageForm
 from flask_login import current_user, login_user, logout_user, login_required
 from app.models import User, Channel, Course
 from flask import request
 from werkzeug.urls import url_parse
 from sqlalchemy.orm.attributes import flag_modified
+import app.producer as prod
+import app.consumer as cons
+from datetime import datetime
 
 
 @app.route('/forum')
@@ -86,7 +90,8 @@ def register():
         return redirect(url_for('index'))
     form = RegistrationForm()
     if form.validate_on_submit():
-        user = User(username=form.username.data, email=form.email.data, user_type=form.login_type.data, subscribed_channels=[], subscribed_courses=[])
+        user = User(username=form.username.data, email=form.email.data, user_type=form.login_type.data,
+                    subscribed_channels=[], subscribed_courses=[])
         user.set_password(form.password.data)
         db.session.add(user)
         db.session.commit()
@@ -100,13 +105,6 @@ def join():
     form = JoinChannelForm()
     if form.validate_on_submit():
         ch = Channel.query.get(form.title.data)
-        # num = ch.number_of_members
-        # ch.number_of_members = num+1
-        # flag_modified(ch, "number_of_members")
-        # db.session.merge(ch)
-        # db.session.flush()
-        # db.session.commit()
-
         ch_list = list(current_user.subscribed_channels)
         ch_list.append(ch)
         current_user.subscribed_channels = ch_list
@@ -125,7 +123,7 @@ def add():
     form = AddChannelForm()
     if form.validate_on_submit():
         ch_name = str(form.channel_name.data)
-        chan = Channel(name=ch_name, number_of_members=0, number_of_posts=0)
+        chan = Channel(name=ch_name, number_of_members=0, number_of_posts=0, posts=[])
         db.session.add(chan)
         db.session.flush()
         db.session.commit()
@@ -133,11 +131,34 @@ def add():
     return render_template('add.html', form=form)
 
 
-@app.route('/channel/<name>')
+@app.route('/channel/<name>', methods=['GET', 'POST'])
 @login_required
 def channel(name):
     chan = Channel.query.filter_by(name=name).first_or_404()
-    return render_template('channel.html', channel=chan)
+    form = SendMessageForm()
+    if form.validate_on_submit():
+        # Publishing the message
+        message = str(form.message.data)
+        sender = str(current_user.username)
+        now = str(datetime.utcnow())
+        print("Now {}".format(now))
+        metadata_msg = sender + '~' + now + '~' + message
+        example = prod.ExamplePublisher('amqp://guest:guest@localhost:5672/%2F?connection_attempts=3&heartbeat=3600',
+                                        chan.name)
+        example.run(metadata_msg)
+
+        amqp_url = 'amqp://guest:guest@localhost:5672/%2F'
+        consumer = cons.ExampleConsumer(amqp_url, chan.name)
+        while True:
+            try:
+                consumer.run()
+                break
+            except:
+                continue
+
+        chan = Channel.query.filter_by(name=name).first_or_404()
+        return render_template('channel.html', channel=chan, form=form)
+    return render_template('channel.html', channel=chan, form=form)
 
 
 @app.route('/topic/<name>')
@@ -192,4 +213,3 @@ def course(name):
 def course_f(name):
     c = Course.query.filter_by(name=name).first_or_404()
     return render_template('course_faculty.html', course=c)
-

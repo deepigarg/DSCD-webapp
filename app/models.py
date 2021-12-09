@@ -2,6 +2,8 @@ from app import db
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import UserMixin
 from app import login
+from datetime import datetime
+import pytz
 
 
 class User(UserMixin, db.Model):
@@ -27,6 +29,7 @@ class Channel(UserMixin, db.Model):
     name = db.Column(db.String(100), index=True, primary_key=True)
     number_of_members = db.Column(db.Integer)
     number_of_posts = db.Column(db.Integer)
+    posts = db.Column(db.PickleType)
 
     def __repr__(self):
         return '<Channel {};>'.format(self.name)
@@ -38,6 +41,18 @@ class Course(UserMixin, db.Model):
 
     def __repr__(self):
         return '<Course {};>'.format(self.name)
+
+
+class Message(UserMixin, db.Model):
+    msg_id = db.Column(db.Integer, primary_key=True)
+    channel = db.Column(db.String(100))
+    sender = db.Column(db.String(64))
+    content = db.Column(db.String(100000))
+    timestamp = db.Column(db.DateTime, index=True)
+
+    def __repr__(self):
+        return '<ID {}; Channel {}; Sender {}; Message {};>'.format(
+            self.msg_id, self.channel, self.sender, self.content)
 
 
 @login.user_loader
