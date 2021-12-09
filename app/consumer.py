@@ -105,9 +105,8 @@ class ExampleConsumer(object):
         print('Received message # %s from %s: %s',
               basic_deliver.delivery_tag, properties.app_id, body)
 
-        ch = Channel.query.filter_by(name=self.QUEUE).first_or_404()
-        print(ch)
-        posts = ch.posts
+        print(self.obj)
+        posts = self.obj.posts
         print("reached ch.posts")
         mcount = len(posts)
         msg_body = str(body)
@@ -121,12 +120,12 @@ class ExampleConsumer(object):
         contnt = msg_lines[2]
         msg = Message(msg_id=mcount, channel=self.QUEUE, sender=sndr, content=contnt, timestamp=timestamp_)
         posts.append(msg)
-        ch.posts = posts
+        self.obj.posts = posts
         print(posts)
         print("reached ch.posts = posts too")
-        flag_modified(ch, "posts")
+        flag_modified(self.obj, "posts")
         print("flag modified")
-        db.session.merge(ch)
+        db.session.merge(self.obj)
         db.session.flush()
         db.session.commit()
         self.acknowledge_message(basic_deliver.delivery_tag)
@@ -142,10 +141,11 @@ class ExampleConsumer(object):
         print('Acknowledging message %s', delivery_tag)
         self._channel.basic_ack(delivery_tag)
 
-    def run(self):
+    def run(self, obj):
         """Run the example consumer by connecting to RabbitMQ and then
         starting the IOLoop to block and allow the SelectConnection to operate.
         """
+        self.obj = obj
         self.connect()
         # self._connection.ioloop.start()
 

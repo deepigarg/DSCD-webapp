@@ -38,6 +38,7 @@ class Channel(UserMixin, db.Model):
 class Course(UserMixin, db.Model):
     name = db.Column(db.String(100), index=True, primary_key=True)
     number_of_members = db.Column(db.Integer)
+    posts = db.Column(db.PickleType)
 
     def __repr__(self):
         return '<Course {};>'.format(self.name)

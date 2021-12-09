@@ -780,6 +780,7 @@ body::-webkit-scrollbar-thumb {
 .feed-text {
   font-size: 1rem;
   margin-bottom: 1rem;
+  margin-top: 0.25rem;
   text-align: justify;
 }
 

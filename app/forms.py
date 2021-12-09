@@ -75,3 +75,8 @@ class AddCourseForm(FlaskForm):
 class SendMessageForm(FlaskForm):
     message = StringField('', validators=[DataRequired()], render_kw={"placeholder": "Type a message..."})
     submit = SubmitField('Send!')
+
+
+class MakeAnnouncementForm(FlaskForm):
+    message = StringField('', validators=[DataRequired()], render_kw={"placeholder": "Make an announcement..."})
+    submit = SubmitField('Send!')

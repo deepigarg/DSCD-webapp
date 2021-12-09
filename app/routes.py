@@ -1,7 +1,7 @@
 from app import app, db
 from flask import render_template, flash, redirect, url_for
 from app.forms import LoginForm, RegistrationForm, JoinChannelForm, AddChannelForm, AddCourseForm, JoinCourseForm
-from app.forms import SendMessageForm
+from app.forms import SendMessageForm, MakeAnnouncementForm
 from flask_login import current_user, login_user, logout_user, login_required
 from app.models import User, Channel, Course
 from flask import request
@@ -151,7 +151,7 @@ def channel(name):
         consumer = cons.ExampleConsumer(amqp_url, chan.name)
         while True:
             try:
-                consumer.run()
+                consumer.run(chan)
                 break
             except:
                 continue
@@ -193,7 +193,7 @@ def addcourse():
     form = AddCourseForm()
     if form.validate_on_submit():
         c_name = str(form.course_name.data)
-        c = Course(name=c_name, number_of_members=0)
+        c = Course(name=c_name, number_of_members=0, posts=[])
         db.session.add(c)
         db.session.flush()
         db.session.commit()
@@ -201,15 +201,48 @@ def addcourse():
     return render_template('addcourse.html', form=form)
 
 
-@app.route('/course/<name>')
+@app.route('/course/<name>', methods=['GET', "POST"])
 @login_required
 def course(name):
+    c = Course.query.filter_by(name=name).first_or_404()
+    amqp_url = 'amqp://guest:guest@localhost:5672/%2F'
+    consumer = cons.ExampleConsumer(amqp_url, c.name)
+    while True:
+        try:
+            consumer.run(c)
+            break
+        except:
+            continue
+
     c = Course.query.filter_by(name=name).first_or_404()
     return render_template('course.html', course=c)
 
 
-@app.route('/course/f/<name>')
+@app.route('/course/f/<name>', methods=['GET', "POST"])
 @login_required
 def course_f(name):
     c = Course.query.filter_by(name=name).first_or_404()
-    return render_template('course_faculty.html', course=c)
+    form = MakeAnnouncementForm()
+    if form.validate_on_submit():
+        # Publishing the message
+        message = str(form.message.data)
+        sender = str(current_user.username)
+        now = str(datetime.utcnow())
+        print("Now {}".format(now))
+        metadata_msg = sender + '~' + now + '~' + message
+        example = prod.ExamplePublisher('amqp://guest:guest@localhost:5672/%2F?connection_attempts=3&heartbeat=3600',
+                                        c.name)
+        example.run(metadata_msg)
+
+        amqp_url = 'amqp://guest:guest@localhost:5672/%2F'
+        consumer = cons.ExampleConsumer(amqp_url, c.name)
+        while True:
+            try:
+                consumer.run(c)
+                break
+            except:
+                continue
+
+        c = Course.query.filter_by(name=name).first_or_404()
+        return render_template('course_faculty.html', course=c, form=form)
+    return render_template('course_faculty.html', course=c, form=form)
