@@ -1,10 +1,107 @@
-<!DOCTYPE html>
+<!DOCTYPE >
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
-<body>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta http-equiv="refresh" content="45" />
+    <title>Topic: {{ topic.name }} </title>
+    <link rel="stylesheet" href="/static/css/all.css" />
+    <link rel="stylesheet" href="/static/style.css" />
+  </head>
 
-</body>
+  <body>
+    <div class="container">
+      <!-- Header and navigation -->
+        <nav class="nav">
+          <a href="{{ url_for('index') }}"><p style="color:white;"><b>Resources Forum</b></p></a>
+          <a href="{{ url_for('index_course') }}"><p style="color:white;"><b>Course Management</b></p></a>
+          <a href="{{ url_for('explore_opportunities') }}"><p style="color:white;">Explore Opportunities</p></a>
+          <a href="{{ url_for('doubt_resolution') }}"><p style="color:white;">Academic Doubt Resolution</p></a>
+          {% if current_user.is_anonymous %}
+          <a href="{{ url_for('login') }}"><p style="color:white;">Login</p></a>
+          {% else %}
+          <a href="{{ url_for('logout') }}"><p style="color:white;">Logout</p></a>
+          {% endif %}
+        </nav>
+      <!-- End of header and navigation -->
+      <main class="main">
+          <article class="sidebar">
+            <section class="channels">
+              <div class="sidebar-user-info">
+                <h4 style="color:white;">{{ current_user.username }}</h4>
+<!--                <i class="fas fa-chevron-down"></i>-->
+              </div>
+              <p class="sidebar-user-info-additional">
+                  <i class="fas fa-circle"></i>{{ current_user.email }}
+              </p>
+              <h4 class="channels-header">
+                <i class="fas fa-sort-down"></i> Your Topics
+              </h4>
+              <ul>
+                {% for ch in current_user.subscribed_channels %}
+                  {% if ch.name==topic.name %}
+                    <li class="active">
+                      <a href= "/topic/{{ ch.name }}" ><i class="fas fa-hashtag"></i>{{ ch.name }}</a>
+                    </li>
+                  {% else %}
+                    <li>
+                      <a href= "/topic/{{ ch.name }}" ><i class="fas fa-hashtag"></i>{{ ch.name }}</a>
+                    </li>
+                  {% endif %}
+                {% endfor %}
+                  <li>
+                    <a href="/join"><i class="fas fa-plus"></i>Join a topic</a>
+                  </li>
+              </ul>
+            </section>
+          </article>
+        <section class="body">
+            <section class="content-header">
+              <article class="channel-content-header-details">
+                <h4 class="channel-content-header-name">
+                  #{{ topic.name }} <i class="fas fa-star"></i>
+                </h4>
+                <!--
+                <section class="content-header-icons">
+                  <div>
+                    <i class="far fa-user"></i>
+                    &lt;!&ndash;<span class="content-header-counter">23</span>&ndash;&gt;
+                  </div>
+                  <div>
+                    <i class="fas fa-thumbtack fa-rotate-315 last"></i>
+                    <span class="content-header-counter">23</span>
+                  </div>
+                  &lt;!&ndash;<p class="content-header-text">
+                    Track and cordinate social media.
+                  </p>&ndash;&gt;
+                </section>-->
+            </article>
+            </section>
+            <section class="feeds">
+              <article class="feed">
+                <!--<section class="feeds-user-avatar">
+                  <img src="images/user2.jpg" alt="User 1" width="40" />
+                  <span>Z</span>
+                </section>-->
+                {{ moment.include_moment() }}
+                {% for post in topic.opps %}
+                  <section class="feed-content">
+                    <section class="feed-user-info">
+                      <h4>{{ post.sender }} <span class="time-stamp">{{ moment(post.timestamp).format('LLL') }}</span></h4>
+                    </section>
+                    <div>
+                      <p class="feed-text">
+                        {{ post.content }}
+                      </p>
+                    </div>
+                  </section>
+                {% endfor %}
+              </article>
+            </section>
+        </section>
+      </main>
+    </div>
+    <script src="/static/script.js"></script>
+  </body>
 </html>

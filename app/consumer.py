@@ -20,7 +20,7 @@ class ExampleConsumer(object):
     EXCHANGE = 'portal'
     EXCHANGE_TYPE = ExchangeType.topic
 
-    def __init__(self, amqp_url, topic_name):
+    def __init__(self, amqp_url, topic_name, inst="channel"):
         """Create a new instance of the consumer class, passing in the AMQP
         URL used to connect to RabbitMQ.
         :param str amqp_url: The AMQP url to connect with
@@ -41,6 +41,7 @@ class ExampleConsumer(object):
         # for higher consumer throughput
         self._prefetch_count = 1
         self.num_msgs = 0
+        self.inst_type = inst
 
     def connect(self):
         """This method connects to RabbitMQ, returning the connection handle.
@@ -106,9 +107,12 @@ class ExampleConsumer(object):
               basic_deliver.delivery_tag, properties.app_id, body)
 
         print(self.obj)
-        posts = self.obj.posts
+        if self.inst_type=="channel" or self.inst_type=="course" or self.inst_type=="doubt":
+            posts = self.obj.posts
+        elif self.inst_type=="topic":
+            posts = self.obj.opps
         print("reached ch.posts")
-        mcount = len(posts)
+        mcount = Message.query.filter_by(type=self.inst_type).count()
         msg_body = str(body)
         msg_body = msg_body[3:-2]
         msg_lines = msg_body.split('~')
@@ -118,12 +122,17 @@ class ExampleConsumer(object):
         print(timest)
         timestamp_ = datetime.strptime(timest, "%Y-%m-%d %H:%M:%S.%f")
         contnt = msg_lines[2]
-        msg = Message(msg_id=mcount, channel=self.QUEUE, sender=sndr, content=contnt, timestamp=timestamp_)
+        mid = self.inst_type + '-' + self.QUEUE + '-' + str(mcount)
+        msg = Message(msg_id=mid, name=self.QUEUE, sender=sndr, content=contnt, timestamp=timestamp_, type=self.inst_type, replies=[], tags=[])
         posts.append(msg)
-        self.obj.posts = posts
-        print(posts)
-        print("reached ch.posts = posts too")
-        flag_modified(self.obj, "posts")
+
+        if self.inst_type=="channel" or self.inst_type=="course":
+            self.obj.posts = posts
+            flag_modified(self.obj, "posts")
+        elif self.inst_type=="topic":
+            self.obj.opps = posts
+            flag_modified(self.obj, "opps")
+
         print("flag modified")
         db.session.merge(self.obj)
         db.session.flush()

@@ -1,5 +1,5 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, BooleanField, SubmitField, RadioField, SelectField
+from wtforms import StringField, PasswordField, BooleanField, SubmitField, RadioField, SelectField, HiddenField
 from wtforms.validators import ValidationError, DataRequired, Email, EqualTo
 from app.models import User, Channel, Course
 
@@ -80,3 +80,30 @@ class SendMessageForm(FlaskForm):
 class MakeAnnouncementForm(FlaskForm):
     message = StringField('', validators=[DataRequired()], render_kw={"placeholder": "Make an announcement..."})
     submit = SubmitField('Send!')
+
+
+class ShareOpportunityForm(FlaskForm):
+    description = StringField('', validators=[DataRequired()],
+                              render_kw={"placeholder": "Type an opportunity to share..."})
+    tagOne = SelectField(
+        'Relevant Tag 1',
+        [DataRequired()])
+    tagTwo = SelectField(
+        'Relevant Tag 2')
+    tagThree = SelectField(
+        'Relevant Tag 3')
+    submit = SubmitField('Publish!')
+
+    def __init__(self):
+        super(ShareOpportunityForm, self).__init__()
+        channels = Channel.query.all()
+        choices = [('None', 'None')]
+        choices.extend([(n.name, n.name) for n in channels])
+        self.tagOne.choices = choices
+        self.tagTwo.choices = choices
+        self.tagThree.choices = choices
+
+
+class InterestedForm(FlaskForm):
+    submit = SubmitField('Interested? Apply Now!')
+    id = HiddenField('id')

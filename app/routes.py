@@ -1,9 +1,10 @@
 from app import app, db
 from flask import render_template, flash, redirect, url_for
-from app.forms import LoginForm, RegistrationForm, JoinChannelForm, AddChannelForm, AddCourseForm, JoinCourseForm
+from app.forms import LoginForm, RegistrationForm, JoinChannelForm, AddChannelForm, AddCourseForm, JoinCourseForm, \
+    ShareOpportunityForm, InterestedForm
 from app.forms import SendMessageForm, MakeAnnouncementForm
 from flask_login import current_user, login_user, logout_user, login_required
-from app.models import User, Channel, Course
+from app.models import User, Channel, Course, Message
 from flask import request
 from werkzeug.urls import url_parse
 from sqlalchemy.orm.attributes import flag_modified
@@ -30,7 +31,7 @@ def index_faculty():
     return render_template('index-faculty.html')
 
 
-@app.route('/forum')
+@app.route('/s/doubt-resolution')
 @login_required
 def index_staff():
     return render_template('index-staff.html')
@@ -123,7 +124,7 @@ def add():
     form = AddChannelForm()
     if form.validate_on_submit():
         ch_name = str(form.channel_name.data)
-        chan = Channel(name=ch_name, number_of_members=0, number_of_posts=0, posts=[])
+        chan = Channel(name=ch_name, number_of_members=0, number_of_posts=0, posts=[], opps=[])
         db.session.add(chan)
         db.session.flush()
         db.session.commit()
@@ -146,6 +147,14 @@ def channel(name):
         example = prod.ExamplePublisher('amqp://guest:guest@localhost:5672/%2F?connection_attempts=3&heartbeat=3600',
                                         chan.name)
         example.run(metadata_msg)
+        timestamp_ = datetime.strptime(now, "%Y-%m-%d %H:%M:%S.%f")
+        mcount = Message.query.filter_by(type='course').count()
+        mid = 'channel' + '-' + chan.name + '-' + str(mcount)
+        msg = Message(msg_id=mid, name=chan.name, content=message, sender=sender, timestamp=timestamp_, type='channel',
+                      replies=[], tags=[])
+        db.session.add(msg)
+        db.session.flush()
+        db.session.commit()
 
         amqp_url = 'amqp://guest:guest@localhost:5672/%2F'
         consumer = cons.ExampleConsumer(amqp_url, chan.name)
@@ -159,13 +168,6 @@ def channel(name):
         chan = Channel.query.filter_by(name=name).first_or_404()
         return render_template('channel.html', channel=chan, form=form)
     return render_template('channel.html', channel=chan, form=form)
-
-
-@app.route('/topic/<name>')
-@login_required
-def topic(name):
-    chan = Channel.query.filter_by(name=name).first_or_404()
-    return render_template('topic.html', topic=chan)
 
 
 @app.route('/joincourse', methods=['GET', 'POST'])
@@ -206,7 +208,7 @@ def addcourse():
 def course(name):
     c = Course.query.filter_by(name=name).first_or_404()
     amqp_url = 'amqp://guest:guest@localhost:5672/%2F'
-    consumer = cons.ExampleConsumer(amqp_url, c.name)
+    consumer = cons.ExampleConsumer(amqp_url, c.name, inst="course")
     while True:
         try:
             consumer.run(c)
@@ -233,9 +235,17 @@ def course_f(name):
         example = prod.ExamplePublisher('amqp://guest:guest@localhost:5672/%2F?connection_attempts=3&heartbeat=3600',
                                         c.name)
         example.run(metadata_msg)
+        timestamp_ = datetime.strptime(now, "%Y-%m-%d %H:%M:%S.%f")
+        mcount = Message.query.filter_by(type='course').count()
+        mid = 'course' + '-' + c.name + '-' + str(mcount)
+        msg = Message(msg_id=mid, name=c.name, content=message, sender=sender, timestamp=timestamp_, type='course',
+                      replies=[], tags=[])
+        db.session.add(msg)
+        db.session.flush()
+        db.session.commit()
 
         amqp_url = 'amqp://guest:guest@localhost:5672/%2F'
-        consumer = cons.ExampleConsumer(amqp_url, c.name)
+        consumer = cons.ExampleConsumer(amqp_url, c.name, inst="course")
         while True:
             try:
                 consumer.run(c)
@@ -246,3 +256,85 @@ def course_f(name):
         c = Course.query.filter_by(name=name).first_or_404()
         return render_template('course_faculty.html', course=c, form=form)
     return render_template('course_faculty.html', course=c, form=form)
+
+
+# @app.route('/apply/<msgid>', methods=['GET', 'POST'])
+# def apply(msgid):
+#     m = Message.query.filter_by(msg_id=msgid).first_or_404()
+#     print("here")
+#     print(m)
+#     curr_replies = m.replies
+#     curr_replies.append(current_user.username)
+#     m.replies = curr_replies
+#     flag_modified(m, "replies")
+#     db.session.merge(m)
+#     db.session.flush()
+#     db.session.commit()
+#     name = msgid.split('-')[1]
+#     print(name)
+#     c = Channel.query.filter_by(name=name).first_or_404()
+#     return render_template('topic.html', topic=c)
+
+
+
+@app.route('/shareopportunity', methods=['GET', "POST"])
+@login_required
+def share_opportunity():
+    form = ShareOpportunityForm()
+    if form.validate_on_submit():
+        # Publishing the message
+        message = str(form.description.data)
+        sender = str(current_user.username)
+        now = str(datetime.utcnow())
+        print("Now {}".format(now))
+        metadata_msg = sender + '~' + now + '~' + message
+
+        tagOne = str(form.tagOne.data)
+        tagTwo = str(form.tagTwo.data)
+        tagThree = str(form.tagThree.data)
+        tags = [tagOne, tagTwo, tagThree]
+
+        for tag in tags:
+            if tag != 'None':
+                c = Channel.query.filter_by(name=tag).first_or_404()
+                example = prod.ExamplePublisher(
+                    'amqp://guest:guest@localhost:5672/%2F?connection_attempts=3&heartbeat=3600',
+                    c.name)
+                example.run(metadata_msg)
+
+        timestamp_ = datetime.strptime(now, "%Y-%m-%d %H:%M:%S.%f")
+        mcount = Message.query.filter_by(type='topic').count()
+        mid = 'topic' + '-' + tagOne + '-' + str(mcount)
+        msg = Message(msg_id=mid, name=tagOne, content=message, sender=sender, timestamp=timestamp_, type='topic',
+                      replies=[], tags=[])
+        db.session.add(msg)
+        db.session.flush()
+        db.session.commit()
+
+        return render_template('publish_opportunities.html')
+    return render_template('share_opportunity.html', form=form)
+
+
+@app.route('/topic/<name>', methods=['GET', 'POST'])
+@login_required
+def topic(name):
+    chan = Channel.query.filter_by(name=name).first_or_404()
+    amqp_url = 'amqp://guest:guest@localhost:5672/%2F'
+    consumer = cons.ExampleConsumer(amqp_url, chan.name, inst="topic")
+    while True:
+        try:
+            consumer.run(chan)
+            break
+        except:
+            continue
+
+    c = Channel.query.filter_by(name=name).first_or_404()
+
+    return render_template('topic.html', topic=c)
+
+
+@app.route('/your-opportunities', methods=['GET', 'POST'])
+@login_required
+def your_opportunities():
+    msgs = Message.query.filter_by(sender=current_user.username, type="topic")
+    return render_template('your_opportunities.html', msgs=msgs)

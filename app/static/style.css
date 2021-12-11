@@ -116,13 +116,13 @@ html {
   --slack-tag-background: #f8f8f8;
   --slack-tag-border-color: rgba(97, 96, 97, 1);
   --slack-tag-forecolor: rgba(134, 134, 134, 1);
-  --slack-search-background: #337ab7;
-  --slack-background: #337ab7;
+  --slack-search-background: #004789;
+  --slack-background: #004789;
   --slack-input-border-color: rgba(29, 28, 29, 0.5);
   --dark-grey: #9e9a9a;
-  --slack-other-bckground: #337ab7;
+  --slack-other-bckground: #004789;
   --slack-white: #cfc3cf;
-  --slack-border-color: #337ab7;
+  --slack-border-color: #004789;
   --slack-main-white: #ffffff;
   --light-gray: #f1f3f5;
 }
@@ -134,8 +134,8 @@ body {
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  height: 100%;
-  width: 100%;
+  height: 100vh;
+  width: 100vw;
   text-align: justify;
   overflow: auto;
 }
@@ -274,7 +274,7 @@ body::-webkit-scrollbar-thumb {
 /* Style the navigation menu */
 .nav {
   width: 100%;
-  background-color: #337ab7;
+  background-color: #004789;
   display: flex;
   align-items: center;
 }
@@ -383,10 +383,10 @@ body::-webkit-scrollbar-thumb {
 
 /* fixed sidebar */
 .sidebar {
-  border-top: 0.1rem solid #337ab7;
+  border-top: 0.1rem solid #004789;
   grid-column: 1 / 2;
-  height: 100vh;
-  background-color: #337ab7;
+  height: 93vh;
+  background-color: #004789;
   display: grid;
   padding:30px;
   /*grid-template-columns: 4rem minmax(6.25rem, 16.25rem);*/
@@ -777,6 +777,20 @@ body::-webkit-scrollbar-thumb {
   line-height: 2.6;
   margin-right: 0.5rem;
 }
+
+.bg-img {
+  /* The image used */
+  background-image: url("images/IIITD-image-blur.png");
+  height:93vh;
+  width: 82vw;
+
+  /* Center and scale the image nicely */
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+  position: relative;
+}
+
 .feed-text {
   font-size: 1rem;
   margin-bottom: 1rem;
@@ -1391,7 +1405,7 @@ body::-webkit-scrollbar-thumb {
   transition: all 0.3s ease-in;
 }
 .btn-primary:hover {
-  background-color: #337ab7;
+  background-color: #004789;
   color: var(--slack-white);
 }
 .btn-small-margin {

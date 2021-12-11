@@ -30,6 +30,7 @@ class Channel(UserMixin, db.Model):
     number_of_members = db.Column(db.Integer)
     number_of_posts = db.Column(db.Integer)
     posts = db.Column(db.PickleType)
+    opps = db.Column(db.PickleType)
 
     def __repr__(self):
         return '<Channel {};>'.format(self.name)
@@ -45,11 +46,14 @@ class Course(UserMixin, db.Model):
 
 
 class Message(UserMixin, db.Model):
-    msg_id = db.Column(db.Integer, primary_key=True)
-    channel = db.Column(db.String(100))
+    msg_id = db.Column(db.String(120), primary_key=True)
+    type = db.Column(db.String(100))
+    name = db.Column(db.String(100))
     sender = db.Column(db.String(64))
     content = db.Column(db.String(100000))
     timestamp = db.Column(db.DateTime, index=True)
+    replies = db.Column(db.PickleType)
+    tags = db.Column(db.PickleType)
 
     def __repr__(self):
         return '<ID {}; Channel {}; Sender {}; Message {};>'.format(

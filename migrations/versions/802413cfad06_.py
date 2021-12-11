@@ -1,8 +1,8 @@
 """empty message
 
-Revision ID: 986c33e030f8
+Revision ID: 802413cfad06
 Revises: 
-Create Date: 2021-12-09 19:39:06.445914
+Create Date: 2021-12-11 01:17:27.588679
 
 """
 from alembic import op
@@ -10,7 +10,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = '986c33e030f8'
+revision = '802413cfad06'
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -23,6 +23,7 @@ def upgrade():
     sa.Column('number_of_members', sa.Integer(), nullable=True),
     sa.Column('number_of_posts', sa.Integer(), nullable=True),
     sa.Column('posts', sa.PickleType(), nullable=True),
+    sa.Column('opps', sa.PickleType(), nullable=True),
     sa.PrimaryKeyConstraint('name')
     )
     op.create_index(op.f('ix_channel_name'), 'channel', ['name'], unique=False)
@@ -34,11 +35,14 @@ def upgrade():
     )
     op.create_index(op.f('ix_course_name'), 'course', ['name'], unique=False)
     op.create_table('message',
-    sa.Column('msg_id', sa.Integer(), nullable=False),
-    sa.Column('channel', sa.String(length=100), nullable=True),
+    sa.Column('msg_id', sa.String(length=120), nullable=False),
+    sa.Column('type', sa.String(length=100), nullable=True),
+    sa.Column('name', sa.String(length=100), nullable=True),
     sa.Column('sender', sa.String(length=64), nullable=True),
     sa.Column('content', sa.String(length=100000), nullable=True),
     sa.Column('timestamp', sa.DateTime(), nullable=True),
+    sa.Column('replies', sa.PickleType(), nullable=True),
+    sa.Column('tags', sa.PickleType(), nullable=True),
     sa.PrimaryKeyConstraint('msg_id')
     )
     op.create_index(op.f('ix_message_timestamp'), 'message', ['timestamp'], unique=False)

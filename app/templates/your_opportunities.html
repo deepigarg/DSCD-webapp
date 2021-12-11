@@ -1,0 +1,62 @@
+<!DOCTYPE >
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta http-equiv="refresh" content="45" />
+    <title>Your Opportunities</title>
+    <link rel="stylesheet" href="/static/css/all.css" />
+    <link rel="stylesheet" href="/static/style.css" />
+  </head>
+
+  <body>
+    <div class="container">
+      <!-- Header and navigation -->
+         <nav class="nav">
+          <a href="{{ url_for('index_faculty') }}"><p style="color:white;"><b>Course Management</b></p></a>
+          <a href="{{ url_for('publish_opportunities') }}"><p style="color:white;">Publish Projects and Opportunities</p></a>
+          {% if current_user.is_anonymous %}
+          <a href="{{ url_for('login') }}"><p style="color:white;">Login</p></a>
+          {% else %}
+          <a href="{{ url_for('logout') }}"><p style="color:white;">Logout</p></a>
+          {% endif %}
+        </nav>
+      <!-- End of header and navigation -->
+      <main class="main">
+          <article class="sidebar">
+          </article>
+        <section class="body">
+            <section class="feeds">
+              <article class="feed">
+                <!--<section class="feeds-user-avatar">
+                  <img src="images/user2.jpg" alt="User 1" width="40" />
+                  <span>Z</span>
+                </section>-->
+                {{ moment.include_moment() }}
+                {% for msg in msgs %}
+                  <section class="feed-content">
+                    <section class="feed-user-info">
+                      <h4>{{ msg.sender }} <span class="time-stamp">{{ moment(msg.timestamp).format('LLL') }}</span></h4>
+                    </section>
+                    <div>
+                      <p class="feed-text">
+                        {{ msg.content }}
+                      </p>
+                    </div>
+                    {% for m in msg.replies %}
+                      <div class="quoted">
+                        <h5>{{ m }}</h5>
+                        <p class="quoted-text">I'm interested in this opportunity!</p>
+                      </div>
+                    {% endfor %}
+                  </section>
+                {% endfor %}
+              </article>
+            </section>
+        </section>
+      </main>
+    </div>
+    <script src="/static/script.js"></script>
+  </body>
+</html>
