@@ -56,8 +56,8 @@ class Message(UserMixin, db.Model):
     tags = db.Column(db.PickleType)
 
     def __repr__(self):
-        return '<ID {}; Channel {}; Sender {}; Message {};>'.format(
-            self.msg_id, self.channel, self.sender, self.content)
+        return '<ID {}; Sender {}; Message {};>'.format(
+            self.msg_id, self.sender, self.content)
 
 
 @login.user_loader

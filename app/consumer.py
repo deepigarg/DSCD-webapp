@@ -107,9 +107,9 @@ class ExampleConsumer(object):
               basic_deliver.delivery_tag, properties.app_id, body)
 
         print(self.obj)
-        if self.inst_type=="channel" or self.inst_type=="course" or self.inst_type=="doubt":
+        if self.inst_type == "channel" or self.inst_type == "course" or self.inst_type == "doubt":
             posts = self.obj.posts
-        elif self.inst_type=="topic":
+        elif self.inst_type == "topic":
             posts = self.obj.opps
         print("reached ch.posts")
         mcount = Message.query.filter_by(type=self.inst_type).count()
@@ -122,14 +122,15 @@ class ExampleConsumer(object):
         print(timest)
         timestamp_ = datetime.strptime(timest, "%Y-%m-%d %H:%M:%S.%f")
         contnt = msg_lines[2]
-        mid = self.inst_type + '-' + self.QUEUE + '-' + str(mcount)
-        msg = Message(msg_id=mid, name=self.QUEUE, sender=sndr, content=contnt, timestamp=timestamp_, type=self.inst_type, replies=[], tags=[])
+        mid = self.inst_type + str(mcount)
+        msg = Message(msg_id=mid, name=self.QUEUE, sender=sndr, content=contnt, timestamp=timestamp_,
+                      type=self.inst_type, replies=[], tags=[])
         posts.append(msg)
 
-        if self.inst_type=="channel" or self.inst_type=="course":
+        if self.inst_type == "channel" or self.inst_type == "course":
             self.obj.posts = posts
             flag_modified(self.obj, "posts")
-        elif self.inst_type=="topic":
+        elif self.inst_type == "topic":
             self.obj.opps = posts
             flag_modified(self.obj, "opps")
 

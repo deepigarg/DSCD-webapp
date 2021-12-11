@@ -107,3 +107,9 @@ class ShareOpportunityForm(FlaskForm):
 class InterestedForm(FlaskForm):
     submit = SubmitField('Interested? Apply Now!')
     id = HiddenField('id')
+
+
+class PostQueryForm(FlaskForm):
+    description = StringField('', validators=[DataRequired()],
+                              render_kw={"placeholder": "Type a question..."})
+    submit = SubmitField('Post!')

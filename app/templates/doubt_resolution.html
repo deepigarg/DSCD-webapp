@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <title>Forum</title>
+    <title>Doubt Resolution</title>
     <link rel="stylesheet" href="static/css/all.css" />
     <link rel="stylesheet" href="static/style.css" />
   </head>
@@ -25,10 +25,27 @@
         </nav>
       <!-- End of header and navigation -->
       <main class="main">
-          <article class="sidebar">
-          </article>
         <section class="body">
-
+             <div class="bg-img" style="height:100vh; width:100vw;">
+              <article class="feed">
+                  <section class="feed-content">
+                    <section class="feed-user-info">
+                      <h4 style="color:white; text-align:center; padding-bottom:7.5px; font-weight:normal; width:95%; position: absolute; top: 15%; font-size:xxx-large;">
+                        Academic FAQs
+                      </h4>
+                      <h4 style="color:white; text-align:center; padding-bottom:20px; width:95%; position: absolute; top: 30%; font-size:large;">
+                        Have queries regarding the degree requirements, current semester, and other academic doubts? View frequently asked queries posted by your peers, or post a new question to the admins!
+                      </h4>
+                    </section>
+                    <form action="/postquery" class="container" style="width:100%">
+                      <button type="submit" class="btn" style="width:50%; height:70px; position:absolute; top:45%; font-size:x-large; justify-self:center;">Post a question now!</button>
+                    </form>
+                    <form action="/viewallfaqs" class="container" style="width:100%">
+                      <button type="submit" class="btn" style="width:50%; height:70px; position:absolute; top:55%; font-size:x-large; justify-self:center;">View all FAQs</button>
+                    </form>
+                  </section>
+              </article>
+          </div>
         </section>
       </main>
     </div>

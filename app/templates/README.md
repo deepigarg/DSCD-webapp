@@ -1,9 +1,16 @@
-# slack-clone-ui
+# How to run the application?
 
-A beautiful and responsive clone of the popular collaborating software, Slack! It has most of its UI's features implemented. It was written in pure HTML5, CSS3 and Vanilla JavaScript.
+1. Clone this GitHub repository or download it as a zip.
+2. Navigate to the DSCD-webapp directory through the terminal, and setup the environment to run the webapp smoothly. Multiple packages will be installed automatically in this step. To avoid conflicts within your system, creating a virtual environment might be helpful.
+   > cd DSCD-webapp
 
-Implementation details can be found on this dev.to [post](https://dev.to/sirneij/building-slack-ui-with-pure-html5-css3-and-javascript-the-power-of-css-grids-and-flexbox-4ban).
+   > pip install -r requirements.txt
+3. Now, simply run the following command to start using the application on localhost.
+   > flask run
 
-## Demo
+# Architecture and Features of the webapp
 
-To see it in action, check [here](https://sirneij.github.io/slack-clone-ui/).
+### Resources Forum
+### Course Management
+### Explore/Publish Opportunities
+### Academic Doubt Resolution

@@ -1,7 +1,9 @@
+from textblob import TextBlob
+
 from app import app, db
 from flask import render_template, flash, redirect, url_for
 from app.forms import LoginForm, RegistrationForm, JoinChannelForm, AddChannelForm, AddCourseForm, JoinCourseForm, \
-    ShareOpportunityForm, InterestedForm
+    ShareOpportunityForm, InterestedForm, PostQueryForm
 from app.forms import SendMessageForm, MakeAnnouncementForm
 from flask_login import current_user, login_user, logout_user, login_required
 from app.models import User, Channel, Course, Message
@@ -148,8 +150,9 @@ def channel(name):
                                         chan.name)
         example.run(metadata_msg)
         timestamp_ = datetime.strptime(now, "%Y-%m-%d %H:%M:%S.%f")
-        mcount = Message.query.filter_by(type='course').count()
-        mid = 'channel' + '-' + chan.name + '-' + str(mcount)
+        mcount = Message.query.filter_by(type='channel').count()
+        mcount+=1
+        mid = 'channel' + str(mcount)
         msg = Message(msg_id=mid, name=chan.name, content=message, sender=sender, timestamp=timestamp_, type='channel',
                       replies=[], tags=[])
         db.session.add(msg)
@@ -237,7 +240,7 @@ def course_f(name):
         example.run(metadata_msg)
         timestamp_ = datetime.strptime(now, "%Y-%m-%d %H:%M:%S.%f")
         mcount = Message.query.filter_by(type='course').count()
-        mid = 'course' + '-' + c.name + '-' + str(mcount)
+        mid = 'course' + str(mcount)
         msg = Message(msg_id=mid, name=c.name, content=message, sender=sender, timestamp=timestamp_, type='course',
                       replies=[], tags=[])
         db.session.add(msg)
@@ -258,6 +261,81 @@ def course_f(name):
     return render_template('course_faculty.html', course=c, form=form)
 
 
+@app.route('/answerqueries', methods=['GET', 'POST'])
+def answer_queries():
+    msg = Message.query.filter_by(type='doubt', replies=[]).first()
+    form = SendMessageForm()
+    if form.validate_on_submit():
+        # Publishing the message
+        message = str(form.message.data)
+        sender = str(current_user.username)
+        now = str(datetime.utcnow())
+        timestamp_ = datetime.strptime(now, "%Y-%m-%d %H:%M:%S.%f")
+
+        curr_replies = msg.replies
+        mcount = len(curr_replies)
+        mcount += 1
+        mid = 'doubt-response' + str(mcount)
+
+        reply = Message(msg_id=mid, name='doubt-response', content=message, sender=sender, timestamp=timestamp_,
+                        type='doubt', replies=[], tags=[])
+
+        curr_replies.append(reply)
+        msg.replies = curr_replies
+        flag_modified(msg, "replies")
+        db.session.merge(msg)
+        db.session.flush()
+        db.session.commit()
+
+        msg = Message.query.filter_by(type='doubt', replies=[]).first()
+        if msg is not None:
+            return render_template('answer_queries.html', message=msg, form=form)
+        else:
+            return render_template('index-staff.html')
+    if msg is not None:
+        return render_template('answer_queries.html', message=msg, form=form)
+    else:
+        return render_template('index-staff.html')
+
+
+@app.route('/viewfaqs', methods=['GET', 'POST'])
+def view_faqs():
+    msgs = Message.query.filter_by(type='doubt')
+    return render_template('view_faqs.html', messages=msgs)
+
+
+@app.route('/postquery', methods=['GET', 'POST'])
+def post_query():
+    form = PostQueryForm()
+    if form.validate_on_submit():
+        # Publishing the message
+        query = str(form.description.data)
+        sender = str(current_user.username)
+        now = str(datetime.utcnow())
+        print("Now {}".format(now))
+        metadata_msg = sender + '~' + now + '~' + query
+        timestamp_ = datetime.strptime(now, "%Y-%m-%d %H:%M:%S.%f")
+        mcount = Message.query.filter_by(type='doubt').count()
+        mid = 'doubt' + str(mcount)
+
+        blob = TextBlob(query)
+        tags = list(blob.noun_phrases)
+        msg = Message(msg_id=mid, name='doubt-resolution', content=query, sender=sender, timestamp=timestamp_, type='doubt',
+                      replies=[], tags=tags)
+        db.session.add(msg)
+        db.session.flush()
+        db.session.commit()
+
+        return render_template('doubt_resolution.html', form=form)
+    return render_template('postquery.html', form=form)
+
+
+@app.route('/viewallfaqs', methods=['GET', 'POST'])
+def view_all_faqs():
+    msgs = Message.query.filter_by(type='doubt')
+    return render_template('view_all_faqs.html', messages=msgs)
+
+
 # @app.route('/apply/<msgid>', methods=['GET', 'POST'])
 # def apply(msgid):
 #     m = Message.query.filter_by(msg_id=msgid).first_or_404()
@@ -274,7 +352,6 @@ def course_f(name):
 #     print(name)
 #     c = Channel.query.filter_by(name=name).first_or_404()
 #     return render_template('topic.html', topic=c)
-
 
 
 @app.route('/shareopportunity', methods=['GET', "POST"])
@@ -304,7 +381,7 @@ def share_opportunity():
 
         timestamp_ = datetime.strptime(now, "%Y-%m-%d %H:%M:%S.%f")
         mcount = Message.query.filter_by(type='topic').count()
-        mid = 'topic' + '-' + tagOne + '-' + str(mcount)
+        mid = 'topic' + str(mcount)
         msg = Message(msg_id=mid, name=tagOne, content=message, sender=sender, timestamp=timestamp_, type='topic',
                       replies=[], tags=[])
         db.session.add(msg)
