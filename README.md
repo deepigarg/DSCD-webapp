@@ -14,4 +14,4 @@
 
 ![](https://github.com/khushaliverma27/DSCD-webapp/blob/master/app/static/images/rabbitMQarch.png?raw=true)
 
-![](https://github.com/khushaliverma27/DSCD-webapp/blob/master/app/static/images/solution-proposed.png?raw=true)
+![](https://github.com/khushaliverma27/DSCD-webapp/blob/master/app/static/images/solution-proposed.PNG?raw=true)
